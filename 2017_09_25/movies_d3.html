@@ -22,7 +22,7 @@
                     .data(data)
                 .attr("class", "h-bar")
                 .style("width", function (d) {
-                    return (d.Worldwide_Gross_M) + "px";
+                    return (d.Worldwide_Gross_M * 0.4) + "px";
                 })
 				.style('background', '#FA8072')
                 .select("span")
@@ -47,7 +47,7 @@
                     .data(data)
                 .attr("class", "h-bar")
                 .style("width", function (d) {
-                    return (d.Budget_M * 4) + "px";
+                    return (d.Budget_M * 3) + "px";
                 })
 				.style('background', '#20B2AA')
                 .select("span")
@@ -72,12 +72,38 @@
                     .data(data)
                 .attr("class", "h-bar")
                 .style("width", function (d) {
-                    return (d.Worldwide_Gross_M-d.Budget_M) + "px";
+                    return ((d.Worldwide_Gross_M-d.Budget_M)*0.4) + "px";
                 })
 				.style('background', '#3CB371')
                 .select("span")
                     .text(function (d) {
                         return d.Film;
+                    });
+			if(comparator)
+            d3.select("body")
+                .selectAll("div#"+idDiv+".h-bar") 
+                .sort(comparator);
+        }
+		
+		function render4(idDiv, data, comparator) {
+            d3.select("#"+idDiv).selectAll("div#"+idDiv+".h-bar")
+                    .data(data)
+                .enter().append("div")
+				.attr("id", idDiv)
+                .attr("class", "h-bar")
+                .append("span");
+				
+            
+            d3.select("#"+idDiv).selectAll("div#"+idDiv+".h-bar")
+                    .data(data)
+                .attr("class", "h-bar")
+                .style("width", function (d) {
+                    return (d.gross * 0.1) + "px";
+                })
+				.style('background', '#000000')
+                .select("span")
+                    .text(function (d) {
+                        return d.name;
                     });
 			if(comparator)
             d3.select("body")
@@ -97,12 +123,42 @@
 			return a.Worldwide_Gross_M < b.Worldwide_Gross_M?1:-1;
 		};
 		
+		var compare4 = function (a, b) {
+          return a.gross > b.gross?-1:1;
+        };
+		
 
 		d3.json("movies.json", function(error, json){ 
             render("chart", json, comparePorBilheteria);
 			render2("chart2", json, comparePorOrcamento);
 			render3("chart3", json, comparePorLucro);
+			
+			var data = {}
+            var genres = []
+
+            for (var i = 0; i < json.length; i++) {
+              var obj = json[i]
+              data[obj["Genre"]] = 0;
+            }
+
+            for (var i = 0; i < json.length; i++) {
+              var obj = json[i]
+              data[obj["Genre"]] += obj["Worldwide_Gross_M"];
+            }
+
+            for (var i in data) {
+              var obj = {
+                "name" : i,
+                "gross" : data[i]
+              };
+
+              genres.push(obj);
+            }
+            render4("chart4", genres, compare4);
+			
         });
+		
+		
 	
 	
 		
@@ -114,6 +170,8 @@
 	<div id="chart2"></div>
 	<h2>Maior lucro em ordem decrescente</h2>
 	<div id="chart3"></div>
+	<h2>Maior bilheteria por Gênero ordem decrescente</h2>
+	<div id="chart4"></div>
 
 </body>
 </html>
