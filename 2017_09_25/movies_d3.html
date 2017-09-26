@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Carregando dados de arquivo</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+
+<body>
+    <script type="text/javascript">
+        function render(idDiv, data, comparator) {
+            d3.select("#"+idDiv).selectAll("div#"+idDiv+".h-bar")
+                    .data(data)
+                .enter().append("div")
+				.attr("id", idDiv)
+                .attr("class", "h-bar")
+                .append("span");
+				
+            
+            d3.select("#"+idDiv).selectAll("div#"+idDiv+".h-bar")
+                    .data(data)
+                .attr("class", "h-bar")
+                .style("width", function (d) {
+                    return (d.Worldwide_Gross_M) + "px";
+                })
+				.style('background', '#FA8072')
+                .select("span")
+                    .text(function (d) {
+                        return d.Film;
+                    });
+			if(comparator)
+            d3.select("body")
+                .selectAll("div#"+idDiv+".h-bar") 
+                .sort(comparator);
+        }
+		
+		 function render2(idDiv, data, comparator) {
+            d3.select("#"+idDiv).selectAll("div#"+idDiv+".h-bar")
+                    .data(data)
+                .enter().append("div")
+				.attr("id", idDiv)
+                .attr("class", "h-bar")
+                .append("span");
+            
+            d3.select("#"+idDiv).selectAll("div#"+idDiv+".h-bar")
+                    .data(data)
+                .attr("class", "h-bar")
+                .style("width", function (d) {
+                    return (d.Budget_M * 4) + "px";
+                })
+				.style('background', '#20B2AA')
+                .select("span")
+                    .text(function (d) {
+                        return d.Film;
+                    });
+			if(comparator)
+            d3.select("body")
+                .selectAll("div#"+idDiv+".h-bar") 
+                .sort(comparator);
+        }
+		
+		    function render3(idDiv, data, comparator) {
+            d3.select("#"+idDiv).selectAll("div#"+idDiv+".h-bar")
+                    .data(data)
+                .enter().append("div")
+				.attr("id", idDiv)
+                .attr("class", "h-bar")
+                .append("span");
+            
+            d3.select("#"+idDiv).selectAll("div#"+idDiv+".h-bar")
+                    .data(data)
+                .attr("class", "h-bar")
+                .style("width", function (d) {
+                    return (d.Worldwide_Gross_M-d.Budget_M) + "px";
+                })
+				.style('background', '#3CB371')
+                .select("span")
+                    .text(function (d) {
+                        return d.Film;
+                    });
+			if(comparator)
+            d3.select("body")
+                .selectAll("div#"+idDiv+".h-bar") 
+                .sort(comparator);
+        }
+		
+		 var comparePorLucro = function (a, b) { 
+        return a.Worldwide_Gross_M-a.Budget_M > b.Worldwide_Gross_M-b.Budget_M?-1:1;
+		};
+		
+		var comparePorOrcamento = function (a, b) { 
+        return a.Budget_M < b.Budget_M?1:-1;
+		};
+		
+		var comparePorBilheteria = function (a, b) { 
+			return a.Worldwide_Gross_M < b.Worldwide_Gross_M?1:-1;
+		};
+		
+
+		d3.json("movies.json", function(error, json){ 
+            render("chart", json, comparePorBilheteria);
+			render2("chart2", json, comparePorOrcamento);
+			render3("chart3", json, comparePorLucro);
+        });
+	
+	
+		
+
+    </script>
+	<h2>Maior bilheteria em ordem decrescente</h2>
+	<div id="chart"></div>
+	<h2>Maior orçamento em ordem decrescente</h2>
+	<div id="chart2"></div>
+	<h2>Maior lucro em ordem decrescente</h2>
+	<div id="chart3"></div>
+
+</body>
+</html>
